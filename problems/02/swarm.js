@@ -4,19 +4,20 @@ import crypto from 'crypto'
 const swarm = new Hyperswarm()
 
 // Swarms abstract away servers and clients and just gives you connections
-swarm.on('connection', function (encryptedSocket) {
+swarm.on('connection', function (encryptedSocket, peerInfo) {
   console.log('New connection from', encryptedSocket.remotePublicKey.toString('hex'))
 
   encryptedSocket.write('Hello world!')
+  let peerID = peerInfo.publicKey.toString('hex').substr(0,5)
 
   encryptedSocket.on('data', function (data) {
-    console.log('Remote peer said:', data.toString())
+    console.log(`Remote peer ${peerID} said:`, data.toString())
   })
   encryptedSocket.on('error', function (err) {
     console.log('Remote peer errored:', err)
   })
   encryptedSocket.on('close', function () {
-    console.log('Remote peer fully left')
+    console.log(`Remote peer ${peerID} fully left`)
   })
 })
 
